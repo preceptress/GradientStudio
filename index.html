@@ -403,7 +403,7 @@
         <p class="mb-2"><strong>Contact:</strong> <a href="mailto:friends@preceptress.ai"
             class="text-decoration-none text-info">friends@preceptress.ai</a></p>
         <p class="small mb-2 text-secondary">⚠️ Some browsers block email links. If clicking doesn’t work, <a href="#"
-            id="copyEmailLink" class="text-info text-decoration-underline">click here</a> to copy our email address.</p>
+            id="copyEmailLink" class="text-info text-decoration-underline">click here</a> to copy the address.</p>
         <p class="mb-0 small text-light"><strong>Privacy Statement:</strong> We respect your privacy. We save minimal
           user data for functionality only.</p>
       </div>
@@ -644,6 +644,221 @@
       const mo = new MutationObserver(sync); mo.observe(preview, { attributes: true, attributeFilter: ['style'] });
       document.addEventListener('input', sync); document.addEventListener('change', sync); sync();
     })();
+  </script>
+
+  <!-- JSZip for packaging -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <script>
+    /* ========= WYSIWYG Swift Export (ZIP) ========= */
+
+    /* Utilities we reuse */
+    function swiftColorLine(hex, opacityPct) {
+      // hex (#rrggbb) + opacity 0–100 -> SwiftUI Color(...)
+      const { r, g, b, a } = hexToRgbA(hex, (opacityPct ?? 100) / 100);
+      const f = n => (n / 255).toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
+      const af = a.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
+      return `Color(red: ${f(r)}, green: ${f(g)}, blue: ${f(b)}, opacity: ${af})`;
+    }
+
+    function currentSpec() {
+      // Safe reads for optional controls
+      const isLinear = document.getElementById('typeLinear')?.checked ?? true;
+      const isRadial = document.getElementById('typeRadial')?.checked ?? false;
+      const isAngular = document.getElementById('typeAngular')?.checked ?? false;
+
+      let type = 'linear';
+      if (isRadial) type = 'radial';
+      else if (isAngular) type = 'angular';
+
+      const angle = Number(document.getElementById('angle')?.value ?? 90);
+
+      const centerX = Number(document.getElementById('centerX')?.value ?? 50);
+      const centerY = Number(document.getElementById('centerY')?.value ?? 50);
+      const startR = Number(document.getElementById('startR')?.value ?? 0);
+      const endR = Number(document.getElementById('endR')?.value ?? 100);
+
+      const aCenterX = Number(document.getElementById('aCenterX')?.value ?? 50);
+      const aCenterY = Number(document.getElementById('aCenterY')?.value ?? 50);
+      const aStart = Number(document.getElementById('aStartAngle')?.value ?? 0);
+
+      // Stops from UI (already exist in your app)
+      const stops = readStops(); // [{ color, pos(0–100), opacity(0–100) }], sorted
+
+      return {
+        type,
+        angle,
+        centerX, centerY, startR, endR,
+        aCenterX, aCenterY, aStart,
+        stops
+      };
+    }
+
+    /* ---------- Swift generators (preserve positions) ---------- */
+
+    function swiftGradientStops(swiftColorsWithLocations) {
+      // swiftColorsWithLocations = [{color: "Color(...)", loc: 0..1}, ...]
+      const lines = swiftColorsWithLocations
+        .map(s => `            Gradient.Stop(color: ${s.color}, location: ${s.loc.toFixed(3)})`)
+        .join(",\n");
+      return `Gradient(stops: [\n${lines}\n        ])`;
+    }
+
+    function genThemeSwift(spec) {
+      // Map stops to Color(...) + location 0..1
+      const stops = (spec.stops?.length ? spec.stops : [
+        { color: '#1a1a40', pos: 0, opacity: 100 },
+        { color: '#000000', pos: 100, opacity: 100 }
+      ]).map(s => ({ color: swiftColorLine(s.color, s.opacity), loc: Math.max(0, Math.min(1, (s.pos || 0) / 100)) }));
+
+      if (spec.type === 'linear') {
+        // Compute start/end points from angle (matches preview)
+        const rad = (spec.angle || 0) * Math.PI / 180;
+        const vx = Math.cos(rad), vy = Math.sin(rad);
+        const m = Math.max(Math.abs(vx), Math.abs(vy)) || 1;
+        const nx = vx / m, ny = vy / m;
+        const sx = (0.5 - 0.5 * nx).toFixed(3), sy = (0.5 - 0.5 * ny).toFixed(3);
+        const ex = (0.5 + 0.5 * nx).toFixed(3), ey = (0.5 + 0.5 * ny).toFixed(3);
+
+        return `import SwiftUI
+
+struct Theme {
+    static let gradient = LinearGradient(
+        gradient: ${swiftGradientStops(stops)},
+        startPoint: UnitPoint(x: ${sx}, y: ${sy}),
+        endPoint:   UnitPoint(x: ${ex}, y: ${ey})
+    )
+}
+`;
+      }
+
+      if (spec.type === 'radial') {
+        const cx = (spec.centerX / 100).toFixed(3);
+        const cy = (spec.centerY / 100).toFixed(3);
+        // Use 0–1 radii (simple, portable demo scale)
+        const sr = (Math.max(0, Math.min(100, spec.startR)) / 100).toFixed(3);
+        const er = (Math.max(1, Math.min(100, spec.endR)) / 100).toFixed(3);
+
+        return `import SwiftUI
+
+struct Theme {
+    static let gradient = RadialGradient(
+        gradient: ${swiftGradientStops(stops)},
+        center: UnitPoint(x: ${cx}, y: ${cy}),
+        startRadius: ${sr},
+        endRadius:   ${er}
+    )
+}
+`;
+      }
+
+      // angular
+      const cx = (spec.aCenterX / 100).toFixed(3);
+      const cy = (spec.aCenterY / 100).toFixed(3);
+      const sa = Math.round(spec.aStart || 0);
+      const ea = sa + 360;
+
+      return `import SwiftUI
+
+struct Theme {
+    static let gradient = AngularGradient(
+        gradient: ${swiftGradientStops(stops)},
+        center: UnitPoint(x: ${cx}, y: ${cy}),
+        startAngle: .degrees(${sa}),
+        endAngle:   .degrees(${ea})
+    )
+}
+`;
+    }
+
+    function genContentViewSwift(spec) {
+      // Minimal demo; shows current gradient as background
+      const title = spec.type.charAt(0).toUpperCase() + spec.type.slice(1);
+      return `import SwiftUI
+
+struct ContentView: View {
+    var body: some View {
+        ZStack {
+            Theme.gradient
+                .ignoresSafeArea()
+            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .frame(height: 300)
+                .overlay(Text("${title} Gradient").font(.title3.bold()).padding(.vertical, 4))
+                .padding()
+        }
+        .background(Color.black.opacity(0.96))
+    }
+}
+
+#Preview { ContentView() }
+`;
+    }
+
+    function genAppSwift() {
+      return `import SwiftUI
+
+@main
+struct GradientDemoApp: App {
+    var body: some Scene {
+        WindowGroup { ContentView() }
+    }
+}
+`;
+    }
+
+    function genReadme(spec) {
+      const bullets =
+        spec.type === 'linear' ? `- Type: Linear\\n- Angle: ${Math.round(spec.angle)}°`
+          : spec.type === 'radial' ? `- Type: Radial\\n- Center: (${spec.centerX}%, ${spec.centerY}%)\\n- Start Radius: ${spec.startR}%\\n- End Radius: ${spec.endR}%`
+            : `- Type: Angular\\n- Center: (${spec.aCenterX}%, ${spec.aCenterY}%)\\n- Start Angle: ${Math.round(spec.aStart)}°`;
+
+      const stopsList = spec.stops.map(s => `  - color: ${s.color}, pos: ${s.pos}%, opacity: ${s.opacity}%`).join('\\n');
+
+      return `# GradientDemo (SwiftUI)
+
+Exported from **Gradient Studio**. The Swift code matches your on-screen design.
+
+## Spec
+${bullets}
+- Stops:
+${stopsList}
+
+## Run (Xcode)
+1. Open **Xcode** → *File > New > Project…* → iOS **App** (SwiftUI).
+2. In the project, delete the default \`ContentView.swift\`.
+3. Drag in:
+   - \`GradientDemoApp.swift\`
+   - \`Theme.swift\`
+   - \`ContentView.swift\`
+4. Build & Run on a simulator or device.
+
+Happy gradients! 🎨
+`;
+    }
+
+    /* ---------- ZIP export action ---------- */
+    async function exportIOSZip() {
+      const spec = currentSpec();
+      const zip = new JSZip();
+
+      zip.file("Theme.swift", genThemeSwift(spec));
+      zip.file("ContentView.swift", genContentViewSwift(spec));
+      zip.file("GradientDemoApp.swift", genAppSwift());
+      zip.file("README.md", genReadme(spec));
+
+      const blob = await zip.generateAsync({ type: "blob" });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = "GradientDemo.zip";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+    }
+
+    /* wire the button (if the element exists) */
+    document.getElementById('exportIOSZip')?.addEventListener('click', exportIOSZip);
   </script>
 
 </body>
