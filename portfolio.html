@@ -1,0 +1,653 @@
+<!-- =============================
+FILE: index.html
+============================= -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edward Potter — iOS • SwiftUI • JS • Server Wizard</title>
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:title" content="Edward Potter — iOS • SwiftUI • JS • Server Wizard" />
+    <meta property="og:description"
+        content="SwiftUI artisan, JavaScript tinkerer, and server-side optimizer. Projects, live demos, and contact." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:url" content="https://yourusername.github.io/portfolio/" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Stardom&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0a0b0d;
+            --panel: #101217;
+            --ink: #f4f5f7;
+            --muted: #9aa3ad;
+            --line: #1f232c;
+            --brand: #a38840;
+            --accent: #6a79ff;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(1200px 700px at 80% -10%, #1a1f3a66, transparent 60%),
+                radial-gradient(1000px 600px at 0% 100%, #2a1b2a66, transparent 60%),
+                var(--bg);
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            line-height: 1.45;
+        }
+
+        a {
+            color: var(--brand);
+            text-decoration: none
+        }
+
+        a:hover {
+            opacity: .9
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 20px
+        }
+
+        /* NAV */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: saturate(140%) blur(8px);
+            background: linear-gradient(180deg, #0a0b0df2, #0a0b0dd9 60%, #0a0b0d00);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: .4px
+        }
+
+        .brand .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--brand);
+            box-shadow: 0 0 20px 2px #a3884033
+        }
+
+        .nav a {
+            color: var(--ink)
+        }
+
+        .nav .links {
+            display: flex;
+            gap: 18px;
+            align-items: center
+        }
+
+        .pill {
+            padding: 10px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: linear-gradient(180deg, #0e1116, #0a0b0d);
+            transition: .2s ease
+        }
+
+        .pill:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px -8px #0006;
+            border-color: #2a2f3c
+        }
+
+        /* HERO */
+        .hero {
+            padding: 96px 0 64px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .eyebrow {
+            color: var(--brand);
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            font-size: 12px
+        }
+
+        .title {
+            font-family: Stardom, Inter, system-ui;
+            font-size: 56px;
+            line-height: 1.02;
+            letter-spacing: .2px;
+            margin: 14px 0 16px
+        }
+
+        .subtitle {
+            color: var(--muted);
+            max-width: 780px
+        }
+
+        .cta-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 28px
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: linear-gradient(180deg, #12151c, #0b0d11);
+            color: var(--ink);
+            font-weight: 600
+        }
+
+        .btn:hover {
+            border-color: #2a2f3c
+        }
+
+        .btn-primary {
+            background: linear-gradient(180deg, #2b2f3b, #171a22);
+            border-color: #313543
+        }
+
+        .btn-outline {
+            background: transparent
+        }
+
+        /* MARQUEE */
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: #0a0b0ef2
+        }
+
+        .marquee-track {
+            display: inline-block;
+            padding: 14px 0;
+            animation: slide 20s linear infinite
+        }
+
+        .marquee b {
+            color: var(--brand)
+        }
+
+        @keyframes slide {
+            from {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        /* SECTION & GRID */
+        section {
+            padding: 72px 0
+        }
+
+        h2 {
+            font-size: 28px;
+            margin: 0 0 18px;
+            letter-spacing: .2px
+        }
+
+        p.lead {
+            color: var(--muted);
+            max-width: 820px
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 18px
+        }
+
+        .card {
+            grid-column: span 12;
+            background: linear-gradient(180deg, #12141b, #0e1016);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .card:hover {
+            border-color: #2a2f3c
+        }
+
+        .kicker {
+            color: var(--brand);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 11px
+        }
+
+        .card h3 {
+            margin: 8px 0 8px;
+            font-size: 22px
+        }
+
+        .card p {
+            color: var(--muted)
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: #cfd6df;
+            font-size: 12px
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap
+        }
+
+        .tag {
+            font-size: 12px;
+            color: #c0c7d1
+        }
+
+        /* iPhone mock */
+        .iphone {
+            position: relative;
+            aspect-ratio: 9/19.5;
+            border: 1px solid #2b2f3c;
+            border-radius: 32px;
+            background: linear-gradient(180deg, #0a0c11, #0f1117);
+            box-shadow: inset 0 0 0 8px #090b10, 0 20px 60px -20px #000a
+        }
+
+        .iphone .screen {
+            position: absolute;
+            inset: 22px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #0c0e13;
+            cursor: pointer
+        }
+
+        .toast {
+            position: absolute;
+            left: 50%;
+            bottom: 16px;
+            transform: translate(-50%, 8px);
+            background: #0b0f18cc;
+            color: #f4f5f7;
+            padding: 8px 12px;
+            border: 1px solid #2a2f3c;
+            border-radius: 10px;
+            opacity: 0;
+            transition: .25s ease;
+            pointer-events: none;
+            font-size: 12px
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0)
+        }
+
+        /* Responsive */
+        @media(min-width:720px) {
+            .title {
+                font-size: 72px
+            }
+
+            .card {
+                grid-column: span 6
+            }
+
+            .card--wide {
+                grid-column: span 12
+            }
+
+            .card--third {
+                grid-column: span 4
+            }
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 28px 0 48px;
+            color: var(--muted)
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace
+        }
+
+        .hair {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ffffff1a 20%, #ffffff26 50%, #ffffff1a 80%, transparent);
+            margin: 24px 0
+        }
+
+        pre {
+            background: #0a0c11;
+            padding: 14px;
+            border-radius: 12px;
+            overflow: auto;
+            font-size: 13px;
+            line-height: 1.45;
+            border: 1px solid var(--line)
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAV -->
+    <nav class="nav">
+        <div class="wrap nav-inner">
+            <div class="brand"><span class="dot"></span><a href="#top"><strong>Edward&nbsp;Potter</strong></a></div>
+            <div class="links">
+                <a class="pill" href="#projects">Projects</a>
+                <a class="pill" href="#demos">Demos</a>
+                <a class="pill" href="#stack">Stack</a>
+                <a class="pill" href="#contact">Contact</a>
+                <a class="pill" target="_blank" rel="noopener" href="https://github.com/yourusername">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header id="top" class="hero wrap">
+        <div class="eyebrow">Coder • Server Wizard • New York</div>
+        <h1 class="title">SwiftUI artisan with a fashion-forward web vibe.</h1>
+        <p class="subtitle">I build tactile iOS experiences in <b>SwiftUI</b>, wire them to lean backends
+            (Flask/Nginx/Postgres), and sweat the details so everything feels instant. Demos below. Bring your wildest
+            idea; I’ll ship the prototype.</p>
+        <div class="cta-row">
+            <a class="btn btn-primary" href="#projects">View projects</a>
+            <a class="btn btn-outline" href="#contact">Hire me</a>
+        </div>
+    </header>
+
+    <!-- MARQUEE -->
+    <div class="marquee">
+        <div class="marquee-track wrap">
+            <span class="tag">SwiftUI</span> • <span class="tag">Core Data</span> • <span class="tag">URLSession</span>
+            •
+            <span class="tag">Combine</span> • <span class="tag">JS / Bootstrap</span> • <span class="tag">Python /
+                Flask</span> •
+            <span class="tag">Postgres</span> • <span class="tag">Nginx</span> • <span class="tag">Self-hosting</span> •
+            <b>Fast by default</b> • <span class="tag">Swift Package Dev</span> • <span class="tag">App Store
+                setup</span> •
+            <span class="tag">Server hardening</span> • <span class="tag">SwiftUI</span> • <span class="tag">Core
+                Data</span> •
+            <span class="tag">URLSession</span> • <span class="tag">Combine</span> • <span class="tag">JS /
+                Bootstrap</span> •
+            <span class="tag">Python / Flask</span> • <span class="tag">Postgres</span> • <span class="tag">Nginx</span>
+            •
+            <span class="tag">Self-hosting</span> • <b>Fast by default</b> • <span class="tag">Swift Package Dev</span>
+        </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="wrap">
+        <h2>Selected Projects</h2>
+        <p class="lead">Clean visuals, low latency, and pragmatic engineering. A few highlights from the lab:</p>
+
+        <div class="grid">
+            <article class="card card--third">
+                <div class="kicker">Open Source</div>
+                <h3>BridgeKit.swift</h3>
+                <p>SwiftUI + AI toolbox: QR scanning → URL summarize → generate art via OpenAI/Replicate/Stability.
+                    Keychain-secured API keys. Dev-friendly.</p>
+                <div class="chips">
+                    <span class="chip">SwiftUI</span><span class="chip">Keychain</span><span
+                        class="chip">Async/Await</span>
+                </div>
+                <div class="actions">
+                    <a class="btn" target="_blank" rel="noopener"
+                        href="https://github.com/yourusername/BridgeKit.swift">GitHub</a>
+                    <a class="btn btn-outline" href="#contact">Work with me</a>
+                </div>
+            </article>
+
+            <article class="card card--third">
+                <div class="kicker">Web + Data</div>
+                <h3>HackingPolitics.news</h3>
+                <p>Reddit → Postgres → Flask pipeline that refreshes every 5 minutes. Hourly AI summaries and a clean,
+                    mobile-first UI.</p>
+                <div class="chips">
+                    <span class="chip">Python</span><span class="chip">Flask</span><span class="chip">Postgres</span>
+                </div>
+                <div class="actions">
+                    <a class="btn" target="_blank" rel="noopener" href="#">Live</a>
+                    <a class="btn btn-outline" target="_blank" rel="noopener" href="#">Code</a>
+                </div>
+            </article>
+
+            <article class="card card--third">
+                <div class="kicker">SwiftUI</div>
+                <h3>Gradient Studio</h3>
+                <p>One-stop background + theme generator. iPhone mock + code export. Built for designers and iOS devs
+                    who like to move fast.</p>
+                <div class="chips">
+                    <span class="chip">SwiftUI</span><span class="chip">Canvas</span><span class="chip">Export</span>
+                </div>
+                <div class="actions">
+                    <a class="btn" target="_blank" rel="noopener" href="#">Live</a>
+                    <a class="btn btn-outline" target="_blank" rel="noopener" href="#">Code</a>
+                </div>
+            </article>
+
+            <article class="card card--third">
+                <div class="kicker">Music + AI</div>
+                <h3>SongToSpot</h3>
+                <p>Crate-digging meets Spotify APIs. Curate rare gems, autogenerate art, and ship playlists with one
+                    tap.</p>
+                <div class="chips">
+                    <span class="chip">JS</span><span class="chip">Spotify API</span><span class="chip">Flask</span>
+                </div>
+                <div class="actions">
+                    <a class="btn btn-outline" href="#contact">Demo call</a>
+                </div>
+            </article>
+
+            <article class="card card--third">
+                <div class="kicker">Infra</div>
+                <h3>ForgeOS</h3>
+                <p>Self-hosted stack on Liquid Web: Nginx → Gunicorn → Flask → Postgres. Tuned for sub-ms TTFB on cached
+                    paths.</p>
+                <div class="chips">
+                    <span class="chip">Nginx</span><span class="chip">Perf</span><span class="chip">Security</span>
+                </div>
+                <div class="actions">
+                    <a class="btn" target="_blank" rel="noopener" href="#">Read notes</a>
+                </div>
+            </article>
+
+            <article class="card card--third">
+                <div class="kicker">Retail</div>
+                <h3>Jeno Labs</h3>
+                <p>Shopify customizations: variant swatches, API-driven catalog sync, and elegant theme upgrades.</p>
+                <div class="chips">
+                    <span class="chip">Shopify</span><span class="chip">Liquid</span><span class="chip">Admin API</span>
+                </div>
+                <div class="actions">
+                    <a class="btn btn-outline" href="#contact">Get a quote</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- DEMOS -->
+    <section id="demos" class="wrap">
+        <h2>Gradient Studio</h2>
+        <p class="lead">See the gradient inside an iPhone mockup with CSS and SwiftUI code alongside.</p>
+
+        <div class="card" style="padding: 24px;">
+            <!-- Two-column layout: fixed phone width + flexible code column -->
+            <div class="demo-grid" style="
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap:24px;
+      align-items:center;
+    ">
+
+                <!-- iPhone mockup (fixed column) -->
+                <div class="iphone" style="max-width:320px; margin:0;">
+                    <div class="screen" style="
+          display:flex; align-items:center; justify-content:center;
+          background:
+            radial-gradient(140% 70% at 80% 0%, #6a79ff55, transparent 60%),
+            radial-gradient(140% 70% at 0% 100%, #00ffd555, transparent 60%),
+            #0b0f18;
+        ">
+                        <a href="https://preceptress.github.io/GradientStudio/" target="_blank" rel="noopener" style="
+               padding:12px 20px; font-size:16px; font-weight:600;
+               border-radius:12px; background:#007aff; color:#fff;
+               border:1px solid #0051a8; text-decoration:none;
+               box-shadow:0 6px 18px -8px #007affaa;
+             ">
+                            Visit Site
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Code column -->
+                <div>
+                    <div class="kicker">CSS Gradient</div>
+                    <pre class="mono">.electric {
+  background:
+    radial-gradient(140% 70% at 80% 0%, #6a79ff55, transparent 60%),
+    radial-gradient(140% 70% at 0% 100%, #00ffd555, transparent 60%),
+    #0b0f18;
+}</pre>
+
+                    <div class="kicker" style="margin-top:20px;">SwiftUI Gradient</div>
+                    <pre class="mono">ZStack {
+  RadialGradient(
+    gradient: Gradient(colors: [
+      Color(#colorLiteral(red:0.416, green:0.475, blue:1, alpha:0.33)),
+      .clear
+    ]),
+    center: .topTrailing, startRadius: 0, endRadius: 400
+  )
+  RadialGradient(
+    gradient: Gradient(colors: [
+      Color(#colorLiteral(red:0, green:1, blue:0.835, alpha:0.33)),
+      .clear
+    ]),
+    center: .bottomLeading, startRadius: 0, endRadius: 400
+  )
+  Color.black
+}</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- STACK -->
+    <section id="stack" class="wrap">
+        <h2>Tooling & Stack</h2>
+        <p class="lead">SwiftUI • Combine • Core Data • StoreKit 2 • URLSession • JS/Bootstrap • Flask • Postgres •
+            Nginx • Keychain • Actions • App Store.</p>
+        <div class="grid">
+            <div class="card card--third">
+                <div class="kicker">iOS</div>
+                <h3>SwiftUI, clean architecture</h3>
+                <p>Structured concurrency, DI, previews, snapshot tests, SF Symbols, accessibility.</p>
+            </div>
+            <div class="card card--third">
+                <div class="kicker">Backend</div>
+                <h3>Lean Flask services</h3>
+                <p>Gunicorn + Nginx, TLS, Postgres, caching, observability, zero-downtime deploys.</p>
+            </div>
+            <div class="card card--third">
+                <div class="kicker">Security</div>
+                <h3>Keychain & secrets</h3>
+                <p>Keychain wrappers, encrypted bundles on first launch, env-segregated configs.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="wrap">
+        <h2>Contact</h2>
+        <p class="lead">NYC-based, remote-friendly. Contract, consulting, or staff roles.</p>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Get in touch</h3>
+                <p>Email: <a href="mailto:team@preceptress.ai">team@preceptress.ai</a></p>
+                <p>LinkedIn: <a target="_blank" rel="noopener"
+                        href="https://www.linkedin.com/in/your-handle/">/in/your-handle</a></p>
+                <p>GitHub: <a target="_blank" rel="noopener" href="https://github.com/yourusername">@yourusername</a>
+                </p>
+                <div class="actions">
+                    <a class="btn"
+                        href="mailto:team@preceptress.ai?subject=Project Inquiry — iOS / SwiftUI&body=Hi Edward, we'd like to discuss a project…">Start
+                        a thread</a>
+                    <a class="btn btn-outline" target="_blank" rel="noopener" href="/Edward-Potter-Resume.pdf">View
+                        résumé (PDF)</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="wrap"
+            style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap">
+            <div>© <span id="year"></span> Edward Potter — Built with ❤️ in NYC. Fast by default.</div>
+            <div class="mono">v1.0 • <a href="#top">Back to top</a></div>
+        </div>
+    </footer>
+
+    <!-- Minimal script include -->
+    <script src="./gradient.js"></script>
+</body>
+
+</html>
